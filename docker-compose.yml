@@ -1,0 +1,30 @@
+version: "2"
+
+services:
+   db:
+     image: mariadb:latest
+     volumes:
+       - db_data:/var/lib/mysql
+       - /tmp:/sql
+     restart: always
+     network_mode: "bridge"
+     environment:
+       MYSQL_ROOT_PASSWORD: root
+       MYSQL_DATABASE: drupal
+
+    drupal:
+        image: drupal:7-apache
+        restart: always
+        volumes:
+          - /var/www/html/
+          - "./sites/all:/var/www/html/sites/all"
+          - "./sites/default/files:/var/www/html/sites/default/files:rw"
+          # - "./conf/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini"
+          # - "./drupal/sites/default/docker.settings.php:/var/www/html/sites/default/settings.php"
+        links:
+          - db:mysql
+        network_mode: "bridge"
+        environment:
+          - VIRTUAL_HOST=jobforchina.com
+          - LETSENCRYPT_HOST=jobforchina.com
+          - LETSENCRYPT_EMAIL=none@139.com
